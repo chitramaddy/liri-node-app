@@ -39,7 +39,7 @@ inquirer.prompt([{
     console.log(user.name + "." + " You picked " + user.options + ".");
 
     if (user.options === "spotify-this-song") {
-        //prompt user to pick a song
+        //prompt user to key in a song
         inquirer.prompt([{
             type: 'input',
             name: 'song',
@@ -74,49 +74,72 @@ inquirer.prompt([{
             } else {
                 spotify.search({
                     type: 'track',
-                    query: user.default
+                    query: user.default,
+                    limit: 1
 
                 }, function (err, data) {
                     if (err) {
                         return console.log('Error occurred: ' + err);
                     }
-                    console.log(JSON.stringify(data, null, 2))
-                    var items = data.tracks.items;
-                    for(i=0; i < items.length; i++){
-                        if(items[i].name === "ace of base"){
-                            console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
-                            console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
-                            console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
-                            console.log("Album Name: " + JSON.stringify(data.tracks.items[0].album.name, null, 2))
+                    console.log(JSON.stringify(data[0].album, null, 2))
+                    //not working as expected. showing a different artist and album.
+                    for(var i=0; i < data.length; i++){
+                                            
+                        if(data[i].album.artists[0].name === "ace of base"){
+                            console.log("Artist: " + JSON.stringify((data[i].album.artists[0].name, null, 2)));
+                            console.log("Song: " + JSON.stringify(data[i].album.name));
+                            console.log("Preview: " + JSON.stringify(data[i].album.preview_url, null, 2));
+                            console.log("Album Name: " + JSON.stringify(data[i].album.name, null, 2))
                         }
-                    }
-
-                   
+                    }           
 
                 })
             }
         })
+    }//if the user picked movie this
+    else if(user.options === "movie-this"){
+        //prompt user to give a movie name
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "movie",
+                message: "Give me a movie name?",
+                default: "Mr. Nobody"
+            }
+        ]).then(function(movie){
+            console.log(movie);
+            var movieName = "";
+
+            if(movie){
+            for (var k in movie){
+                movieName = movieName+movie[k];
+            }
+            //request OMDB for movie data and display it on the console
+            var queryURL = "http://www.omdbapi.com/?t="+movieName+"&y=&plot=short&apikey=trilogy"
+            console.log(queryURL);
+
+            request(queryURL, function(error, response, body){
+                console.log(JSON.parse(body));
+                console.log("Title: "+JSON.parse(body).Title);
+                console.log("Year Released: "+JSON.parse(body).Year);
+                console.log("IMDB Rating: "+JSON.parse(body).Ratings[0].Value);
+                console.log("Rotten Tomatoes Rating: "+JSON.parse(body).Ratings[2].Value);
+                console.log("Country: "+JSON.parse(body).Country);
+                console.log("Language: "+JSON.parse(body).Language);
+                console.log("Plot: "+JSON.parse(body).Plot);
+                console.log("Actors: "+JSON.parse(body).Actors);
+                
+            })
+        }else{
+            movieName = this.default;
+            console.log(movieName)
+        }
+
+        })
+
     }
 });
 
-
-//  var songName = process.argv[3]; //capture userInput and query it below 
-
-//  params = songName;
-//     spotify.search({ type: 'track', query: params }, function(err, data) {
-//         if ( err ) {
-//             console.log('Error occurred: ' + err);
-//             return;  
-//         }
-//         else{
-//             output = space + "================= DATA HERE ==================" + 
-//             space + "Song Name: " + "'" +songName.toUpperCase()+ "'" +
-//             space + "Album Name: " + data.tracks.items[0].album.name +
-//             space + "Artist Name: " + data.tracks.items[0].album.artists[0].name +  
-//             space + "URL: " + data.tracks.items[0].album.external_urls.spotify + "\n\n\n";
-//             console.log(output);    
-//             };
-//     });
 // client.get('favorites/list', function(error, tweets, response) {
 //     if(error) throw error;
 //     console.log(tweets);  // The favorites. 
