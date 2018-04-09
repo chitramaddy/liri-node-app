@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 //variables for npm packages
-var inquirer = require("inquirer");
+var inquirer = require("inquirer")
 var request = require("request");
 var fs = require("fs");
 
@@ -24,8 +24,7 @@ var client = new Twitter({
 })
 
 // To take the user input
-inquirer.prompt([
-    {
+inquirer.prompt([{
         type: 'input',
         name: 'name',
         message: 'Hi! What is your name?'
@@ -33,28 +32,72 @@ inquirer.prompt([
     {
         type: 'list',
         name: 'options',
-        message: "Would you like to do one of these?",
+        message: "Pick one of the choices below!",
         choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
     }
-]).then (function(user){
-   console.log(user.name+"."+" You picked "+ user.options +".");
-   })
+]).then(function (user) {
+    console.log(user.name + "." + " You picked " + user.options + ".");
 
-// spotify.search({
-//     type: 'track',
-//     query: 'All the Small Things',
-//     limit: 10
-// }, function (err, data) {
-//     if (err) {
-//         return console.log('Error occurred: ' + err);
-//     }
+    if (user.options === "spotify-this-song") {
+        //prompt user to pick a song
+        inquirer.prompt([{
+            type: 'input',
+            name: 'song',
+            message: 'Give me a song to spotify?',
+            default: 'The Sign'
 
-//     console.log(JSON.stringify(data, null, 2));
-// });
+        }]).then(function (song) {
+            console.log(song);
+            var query = "";
+            if (song) {
+                //get the song name in as a string
+                for (var k in song) {
+                    query = query + " " + song[k];
+                }
 
-// checklist for user to choose an option
+                //Use node-spotify-api to search and display data
+                spotify.search({
+                    type: 'track',
+                    query: query
 
+                }, function (err, data) {
+                    if (err) {
+                        return console.log('Error occurred: ' + err);
+                    }
+                    console.log(JSON.stringify(data.tracks.items, null, 2))
 
+                    console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
+                    console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
+                    console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
+                    console.log("Album Name: " + JSON.stringify(data.tracks.items[0].album.name, null, 2));
+                });
+            } else {
+                spotify.search({
+                    type: 'track',
+                    query: user.default
+
+                }, function (err, data) {
+                    if (err) {
+                        return console.log('Error occurred: ' + err);
+                    }
+                    console.log(JSON.stringify(data, null, 2))
+                    var items = data.tracks.items;
+                    for(i=0; i < items.length; i++){
+                        if(items[i].name === "ace of base"){
+                            console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
+                            console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
+                            console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
+                            console.log("Album Name: " + JSON.stringify(data.tracks.items[0].album.name, null, 2))
+                        }
+                    }
+
+                   
+
+                })
+            }
+        })
+    }
+});
 
 
 //  var songName = process.argv[3]; //capture userInput and query it below 
