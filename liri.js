@@ -52,7 +52,7 @@ inquirer.prompt([{
             if (song) {
                 //get the song name in as a string
                 for (var k in song) {
-                    query = query + "+" + song[k];
+                    query = query+"+"+song[k];
                 }
 
                 //Use node-spotify-api to search and display data
@@ -65,7 +65,7 @@ inquirer.prompt([{
                         return console.log('Error occurred: ' + err);
                     }
                     console.log(JSON.stringify(data.tracks.items, null, 2))
-
+                    console.log("=====================================================")
                     console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
                     console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
                     console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
@@ -86,6 +86,7 @@ inquirer.prompt([{
                     for (var i = 0; i < data.length; i++) {
 
                         if (data[i].album.artists[0].name === "ace of base") {
+                            console.log("=====================================================");
                             console.log("Artist: " + JSON.stringify((data[i].album.artists[0].name, null, 2)));
                             console.log("Song: " + JSON.stringify(data[i].album.name));
                             console.log("Preview: " + JSON.stringify(data[i].album.preview_url, null, 2));
@@ -118,6 +119,7 @@ inquirer.prompt([{
 
                 request(queryURL, function (error, response, body) {
                     console.log(JSON.parse(body));
+                    console.log("=====================================================");
                     console.log("Title: " + JSON.parse(body).Title);
                     console.log("Year Released: " + JSON.parse(body).Year);
                     console.log("IMDB Rating: " + JSON.parse(body).Ratings[0].Value);
@@ -160,10 +162,10 @@ inquirer.prompt([{
                         return console.log('Error occurred: ' + err);
                     }
                     console.log(JSON.stringify(data.tracks.items, null, 2))
-
+                    console.log("=====================================================")
                     console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
                     console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
-                    console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
+                    console.log("Preview: " + JSON.stringify(data.tracks.items[0].album.preview_url, null, 2));
                     console.log("Album Name: " + JSON.stringify(data.tracks.items[0].album.name, null, 2));
                 });
         })
@@ -177,8 +179,10 @@ inquirer.prompt([{
         client.get('statuses/user_timeline', params, function (error, tweets, response) {
             if (!error) {
                 for(var i=0; i < tweets.length; i++){
+                    console.log("=====================================================")
                     console.log("Timeline: "+tweets[i].created_at);
                     console.log("Tweet: "+tweets[i].text);
+                    
                 }
                 
             }
