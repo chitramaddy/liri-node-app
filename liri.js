@@ -138,6 +138,38 @@ inquirer.prompt([{
         })
 
     }
+    //if the user picked "do-what-it-says"
+    else if(user.options === "do-what-it-says"){
+        //read the text from "random.txt"
+        fs.readFile("random.txt", "utf8", function(error, data){
+            var songName = "";
+            var dataArr = data.split(" ");
+            if(error){
+                return console.log(error);
+            }
+            //grab the data from randon.txt and convert it in to string
+            for(var i=1; i < dataArr.length; i++){
+                songName = songName+"+"+dataArr[i];
+                console.log(songName);
+            }
+            spotify.search({
+                type: 'track',
+                query: songName
+                
+            }, 
+            function (err, data) {
+                if (err) {
+                    return console.log('Error occurred: ' + err);
+                }
+                console.log(JSON.stringify(data.tracks.items, null, 2))
+
+                console.log("Artist: " + JSON.stringify(data.tracks.items[0].artists[0].name, null, 2));
+                console.log("Song: " + JSON.stringify(data.tracks.items[0].name));
+                console.log("Preview: " + JSON.stringify(data.tracks.items[0].artists[0].preview_url, null, 2));
+                console.log("Album Name: " + JSON.stringify(data.tracks.items[0].album.name, null, 2));
+            });
+        })
+    }
 });
 
 // client.get('favorites/list', function(error, tweets, response) {
@@ -145,26 +177,3 @@ inquirer.prompt([{
 //     console.log(tweets);  // The favorites. 
 //     console.log(JSON.parse(response));  // Raw response object. 
 //   });
-
-//Show list options mytweets,spotify, movie, do what it says
-
-//confirm what the user chooses and store it in a variable
-
-//write switch cases for options and call respective functions
-
-//write function my tweets to show latest 20 tweets
-
-//write function spotify to retrieve song data, use a for loop to create an array of the song and send it to spotify
-
-//write function movie to request movie data from omdb, for loop to create an array of the movie name or default "Mr. Nobody"
-
-// function{
-//     if(movie=true){
-//         for()
-//     }else{
-// Mr. Nobody
-//     }
-// }
-
-
-//Write a function to read file random_txt and play the song from spotify
